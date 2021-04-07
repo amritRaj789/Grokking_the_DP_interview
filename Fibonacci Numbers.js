@@ -355,3 +355,71 @@ const findMinFee = function(fee){
 	}
 	return dp2;
 }
+
+
+// HOUSE THIEF
+/*There are n houses built in a line. A thief wants to steal the maximum possible money from these houses. 
+The only restriction the thief has is that he can’t steal from two consecutive houses, as that would alert 
+the security system. How should the thief maximize his stealing?
+*/
+
+
+dp[i] = Math.max(dp[i-2]+wealth[i], dp[i-1])
+dp[0] = wealth[0];
+dp[1] = wealth[1];
+dp[2] = dp[0]+wealth[2] , dp[1] = 2+1, 5 = 5
+
+// recursive
+const findMaxSteal = function (wealth){
+	function recursive (i){
+		if(i >= wealth.length)
+			return 0
+		else
+			return Math.max(recursive(i+1), recursive(i+2)+wealth[i])
+	}
+	return recursive(0);
+}
+
+
+// top-down Dynamic Programming with Memoization
+const findMaxSteal = function (wealth){
+	const memo = [];
+	function recursive (i){
+		if(memo[i])
+			return memo[i]
+		if(i >= wealth.length){
+			memo[i] = 0;
+			return memo[i];
+		}
+		memo[i] = Math.max(recursive(i+1), recursive(i+2)+wealth[i]);
+		return memo[i];
+	}
+	return recursive(0);
+}
+
+// bottom up Dynamic Programming
+const findMaxSteal = function (wealth){
+	const dp = new Array(wealth.length);
+	dp[0] = wealth[0];
+	dp[1] = Math.max(wealth[0], wealth[1]);
+	for(let i = 2; i < wealth.length; i++){
+		dp[i] = Math.max(dp[i-1], dp[i-2] + wealth[i]);
+	}
+	return dp[wealth.length-1];
+}
+
+// bottom up DP with memory optimization
+const findMaxSteal = function (wealth){
+	if(wealth.length === 1)
+		return wealth[0]
+	if(wealth.length === 2)
+		return Math.max(wealth[0], wealth[1]);
+	let dp0 = wealth[0];
+	let dp1 = Math.max(wealth[0], wealth[1]);
+	for(let i = 2; i < wealth.length; i++){
+		temp = Math.max(dp1, dp0 + wealth[i]);
+		dp0 = dp1;
+		dp1 = temp;
+	}
+	return dp1;
+}
