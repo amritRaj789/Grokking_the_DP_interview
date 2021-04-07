@@ -50,10 +50,18 @@ const calculateFibonacci = function (n){
 // this now has constant space complexity.
 
 
-// Staircase
-Given a stair with ‘n’ steps, implement a method to count how many possible ways are there 
-to reach the top of the staircase, given that, at every step you can either take 1 step, 2 steps, or 3 steps.
 
+
+
+
+
+
+
+
+// Staircase
+/*Given a stair with ‘n’ steps, implement a method to count how many possible ways are there 
+to reach the top of the staircase, given that, at every step you can either take 1 step, 2 steps, or 3 steps.
+*/
 
 // Recursive
 const CountWays = function (n){
@@ -111,3 +119,81 @@ const CountWays = function(n){
 	return d2;
 }
 // O(n) + O(1)
+
+
+
+
+
+
+
+
+
+// NUMBER FACTORS
+
+/*Given a number ‘n’, implement a method to count how many possible ways there are to express 
+‘n’ as the sum of 1, 3, or 4.*/
+
+
+/*dp[n] = dp[n-1] + dp[n-3] + dp[n-4]
+upto dp[3]
+dp[0] = 1
+dp[1] = 1
+dp[2] = 1
+dp[3] = 2
+*/
+
+// recursive
+
+const CountWays = function (n){
+	if(n <= 2)
+		return 1;
+	if(n === 3)
+		return 2;
+	return CountWays(n-1) + CountWays(n-3) + CountWays(n-4);
+}
+
+// top down DP with Memoization
+
+const CountWays = function (n){
+	const memo = [1,1,1,2];
+	function help(n){
+		if(memo[n])
+			return memo[n];
+		memo[n] = help(n-1) + help(n-3) + help(n-4);
+		return memo[n];
+	}
+	return help(n);
+}
+
+// bottom up Dynamic Programming
+const CountWays = function (n){
+	let dp = new Array(n+1)
+	dp[0] = 1;
+	dp[1] = 1;
+	dp[2] = 1;
+	dp[3] = 2;
+	for(let i = 4; i <= n; i++){
+		dp[i] = dp[i-1] + dp[i-3] + dp[i-4];
+	}
+	return dp[n];
+}
+
+// bottom up Dynamic Programming with memory optimization
+const CountWays = function (n){
+	if(n <= 2)
+		return 1
+	if(n === 3)
+		return 2
+	let dp0 = 1;
+	let dp1 = 1;
+	let dp2 = 1;
+	let dp3 = 2;
+	for(let i = 4; i <= n; i++){
+		temp = dp0 + dp1 + dp3;
+		dp0 = dp1;
+		dp1 = dp2;
+		dp2 = dp3;
+		dp3 = temp;
+	}
+	return dp3;
+}
