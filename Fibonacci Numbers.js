@@ -283,3 +283,75 @@ const countMinJumps = function (jumps){
 	return dp[jumps.length-1];
 }
 // O(n) time and space complexity
+
+
+
+
+
+// MINIMUM JUMPS WITH FEE
+/*Given a staircase with ‘n’ steps and an array of ‘n’ numbers representing the fee 
+that you have to pay if you take the step. Implement a method to calculate the minimum 
+fee required to reach the top of the staircase (beyond the top-most step). At every step, 
+you have an option to take either 1 step, 2 steps, or 3 steps. You should assume that you 
+are standing at the first step.
+*/
+
+// recursive
+const findMinFee = function (fee){
+	function recursion(i){
+		if(i+3 >= fee.length)
+			return fee[i];
+		else{
+			return (Math.min(recursion(i+1), recursion(i+2), recursion(i+3)) + fee[i]);
+		}
+	}
+	return recursion(0);
+}
+
+// top-down DP with memoization
+const findMinFee = function (fee){
+	let memoized = new Array(fee.length);
+	function recursion(i){
+		if(memoized[i])
+			return memoized[i];
+		if(i+3 >= fee.length){
+			memoized[i] = fee[i];
+			return memoized[i];
+		}
+		else{
+			memoized[i] = (Math.min(recursion(i+1), recursion(i+2), recursion(i+3)) + fee[i]);
+			return memoized[i];
+		}
+	}
+	return recursion(0);
+}
+
+// bottom-up DP
+const findMinFee = function(fee){
+	const dp = new Array(fee.length+1);
+	dp[0] = 0;
+	dp[1] = fee[0];
+	dp[2] = fee[0];
+	for(let i = 3; i < fee.length+1; i++){
+		dp[i] = Math.min((dp[i-1]+fee[i-1]), (dp[i-2] + fee[i-2]), (dp[i-3] + fee[i-3]));
+	}
+	return dp[fee.length];
+}
+// time and space complexity of O(n)
+
+//bottom-up DP with memory optimization
+const findMinFee = function(fee){
+	if(fee.length <= 3)
+		return fee[0];
+	const dp = new Array(fee.length+1);
+	let dp0 = 0;
+	let dp1 = fee[0];
+	let dp2 = fee[0];
+	for(let i = 3; i < fee.length+1; i++){
+		temp = Math.min((dp2+fee[i-1]), (dp1 + fee[i-2]), (dp0 + fee[i-3]));
+		dp0 = dp1;
+		dp1 = dp2;
+		dp2 = temp;
+	}
+	return dp2;
+}
