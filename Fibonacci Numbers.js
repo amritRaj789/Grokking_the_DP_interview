@@ -48,3 +48,66 @@ const calculateFibonacci = function (n){
 	return dp[1];
 }
 // this now has constant space complexity.
+
+
+// Staircase
+Given a stair with ‘n’ steps, implement a method to count how many possible ways are there 
+to reach the top of the staircase, given that, at every step you can either take 1 step, 2 steps, or 3 steps.
+
+
+// Recursive
+const CountWays = function (n){
+	if(n === 0)
+		return 1
+	if(n <= 2)
+		return n
+	return CountWays(n-1) + CountWays(n-2) + CountWays(n-3);
+}
+
+// time complexity: O(3^n)
+// space complexity : O(n)
+
+
+// top down DP with memoization
+const CountWays = function (n){
+	const memoized = [1,1,2];
+	function count (n){
+		if(memoized[n])
+			return memoized[n]
+		memoized[n] = count(n-1) + count(n-2) + count(n-3);
+		return memoized[n];
+	}
+	return count(n);
+}
+// O(n) and O(n)
+
+// bottom up Dp
+const CountWays = function (n){
+	let dp = new Array(n+1).fill(0);
+	dp[0] = 1;
+	dp[1] = 1;
+	dp[2] = 2;
+	for(let i = 3; i <= n; i++){
+		dp[i] = dp[i-1] + dp[i-2] + dp[i-3];
+	}
+	return dp[n];
+}
+
+// bottom up DP with memory optimization
+const CountWays = function(n){
+	if(n < 2)
+		return 1
+	if(n == 2)
+		return 2
+	let d0 = 1;
+	let d1 = 1;
+	let d2 = 2;
+	for(let i = 3; i <= n; i++){
+		temp = d0 + d1 + d2;
+		d0 = d1;
+		d1 = d2;
+		d2 = temp;
+	}
+	return d2;
+}
+// O(n) + O(1)
