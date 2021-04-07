@@ -1,3 +1,5 @@
+// Pattern 3: Fibonacci Sequence
+
 // Fibonacci
 
 //simple recursive
@@ -197,3 +199,87 @@ const CountWays = function (n){
 	}
 	return dp3;
 }
+
+
+
+
+// MINIMUM JUMPS TO REACH THE END
+
+/*Given an array of positive numbers, where each element represents the 
+max number of jumps that can be made forward from that element, write a program to find the minimum number of jumps 
+needed to reach the end of the array (starting from the first element). If an element is 0, then we cannot move through that element.*/
+
+// recursive
+
+const countMinJumps = function (jumps){
+	function recursive (i){
+		if(jumps[i] === 0)
+			return null;
+		if(jumps[i] + i >= jumps.length-1)
+			return 1
+		else{
+			let min = +Infinity;
+			let max = jumps[i];
+			while(max > 0){
+				let value = recursive(i+max);
+				if(value){
+					min = Math.min(min, value);
+				}
+				max--;
+			}
+			return min+1;
+		}
+	}
+	return recursive(0);
+}
+
+// top down DP with memoization
+const countMinJumps = function (jumps){
+	let dp = new Array(jumps.length);
+	dp[jumps.length-1] = 0;
+	function help(i){
+		if(dp[i])
+			return dp[i];
+		if(jumps[i] === 0){
+			dp[i] = null;
+			return dp[i];
+		}
+		if(jumps[i] + i >= jumps.length-1){
+			dp[i] = 1;
+			return dp[i];
+		}
+		else{
+			let max = jumps[i];
+			let min = +Infinity;
+			while(max > 0){
+				let value = help(i+max);
+				if(value)
+					min = Math.min(value, min);
+				max++;
+			}
+			dp[i] = min+1;
+			return dp[i];
+		}
+	}
+	return help(0);
+}
+
+// Bottom-up Dynamic Programming
+const countMinJumps = function (jumps){
+	const dp = new Array(jumps.length);
+	let start = 0;
+	let end = jumps[0];
+	let steps = 1;
+	while(start < jumps.length){
+		let currentMax = 0;
+		for(let i = start+1; i <= end && i < jumps.length; i++){
+			currentMax = Math.max(currentMax, jumps[i]+i);
+			dp[i] = steps;
+		}
+		steps++;
+		start = end;
+		end = currentMax;
+	}
+	return dp[jumps.length-1];
+}
+// O(n) time and space complexity
