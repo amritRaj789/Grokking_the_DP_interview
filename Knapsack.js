@@ -248,46 +248,8 @@ let canPartition = function (num){
 console.log(canPartition([1, 1, 3, 4, 7]));
 // time and space complexity of O(N*S) where S is the total sum of all the numbers;
 
-// bottomup dynamic programming
-const canPartition = function (num){
-	let dp = new Array(num.length);
-	for(let i = 0; i < num.length; i++){
-		dp[i] = [];
-	}
-	dp[0][num[0]] = true;
-	let total = num.reduce((a, b) => a+b);
-	if(total%2)
-		return false;
-	let sum = total/2;
-	let count = 0;
-	for(let i = 1; i < num.length; i++){
-		if(dp[i-1][sum] || dp[i-1][sum-num[i]]){
-			count++;
-			console.log("the foor loop ran for: ", count);
-			return true;
-		}
-		let arr = [];
-		arr[num[i]] = true;
-		dp[i-1].forEach((val, index) => {
-			count++;
-			arr[index+num[i]] = true;
-		})
-		dp[i] = [...dp[i-1], ...arr];
-	}
-	console.log("the for loop ran for : ", count);
-	if(dp[i][sum])
-		return dp[i][sum]
-	return false;
-}
-console.log(`Can partitioning be done: ---> ${canPartition([1, 2, 3, 4])}`);
-console.log(`Can partitioning be done: ---> ${canPartition([1, 1, 3, 4, 7])}`);
-// my solution works perfectly
-/*for every dp[i][sum] sum can be a possible subset of array of i elements if, 
-	either sum is already a subset of num[i-1] or sum-num[i] is already a subset of num[i-1]
-	we have to find dp[i][total/2];*/
 
-
-//educative's solution is a bit sketchy
+//educative's solution is a bit sketchy. No as it turned out my solution is actually a bit sketchy
 let canPartition = function(num) {
   const n = num.length;
   // find the total sum
@@ -332,4 +294,80 @@ let canPartition = function(num) {
 
 console.log(`Can partitioning be done: ---> ${canPartition([1, 2, 3, 4])}`);
 console.log(`Can partitioning be done: ---> ${canPartition([1, 1, 3, 4, 7])}`);
-// after running some extensive tests I can safely conclude mine is more efficient both in terms of memory and space
+
+
+
+
+
+// SUBSET SUM
+
+
+// Given a set of positive nunbers, determine if there exists a subset whose sum 
+//is equal to a given number "S"
+
+
+// since this problem is quite similar to equal sum subset lets jump to bottom-up
+
+const canPartition = function (num, sum){
+	let dp = new Array (num.length);
+	for(let i = 0; i < num.length; i++){
+		dp[i] = new Array(sum+1).fill(false);
+	}
+	dp[0][num[0]] = true;
+	for(let i = 0; i < num.length; i++){
+		dp[i][0] = true;
+	}
+	for(let i = 1; i < num.length; i++){
+		if(dp[i-1][sum] === true || dp[i-1][sum-num[i]] === true)
+			return true;
+		for(let s = 1; s <= sum; s++){
+			if(s >= num[i])
+				dp[i][s] = dp[i-1][s-num[i]]
+			else
+				dp[i][s] = dp[i-1][s];
+		}
+	}
+	return dp[num.length-1][sum];
+}
+
+// We can further optimize the space complexity by doing this
+const canPartition = function (num, sum) {
+  const n = num.length;
+  const dp = Array(sum + 1).fill(false);
+
+  // handle sum=0, as we can always have '0' sum with an empty set
+  dp[0] = true;
+
+  // with only one number, we can have a subset only when the required sum is equal to its value
+  for (let s = 1; s <= sum; s++) {
+    dp[s] = num[0] == s;
+  }
+
+  // process all subsets for all sums
+  for (let i = 1; i < n; i++) {
+    for (let s = sum; s >= 0; s--) {
+      // if dp[s]==true, this means we can get the sum 's' without num[i], hence we can move on to
+      // the next number else we can include num[i] and see if we can find a subset to get the
+      // remaining sum
+      if (!dp[s] && s >= num[i]) {
+        dp[s] = dp[s - num[i]];
+      }
+    }
+  }
+  return dp[sum];
+};
+
+
+
+
+
+
+
+
+
+// MINIMUM SUBSET SUM DIFFERENCE
+// Given a set of positive numbers, 
+//partition the set into two subsets with a minimum difference between their subset sums
+
+
+
