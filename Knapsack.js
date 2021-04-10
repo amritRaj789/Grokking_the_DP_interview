@@ -449,3 +449,95 @@ let canPartition = function (num){
 }
 
 // time and space complexity of O(N*S), where S is half of the total sum of all the numbers
+
+
+
+
+
+// COUNT OF SUBSET SUM
+
+//Given a set of positive numbers, find the total number of subsets whose sum is equal to a given number 'S'
+
+const countSubsets = function (num, sum){
+	function recursive (i, s){
+		if(s === 0)
+			return 1
+		if(i === num.length || s < 0)
+			return 0
+		else{
+			return recursive(i+1, s) + recursive(i+1, s-num[i]);
+		}
+	}
+	return recursive(0, sum);
+}
+
+
+// Top down DP with memoization
+
+const countSubsets = function (num, sum){
+	let memo = new Array(num.length);
+	for(let i = 0; i < num.length; i++){
+		memo[i] = new Array(sum+1);
+	}
+	function recursive(i, s){
+		if(memo[i] !== undefined && memo[i][s] !== undefined)
+			return memo[i][s];
+		memo[i] = memo[i] || [];
+		if(s === 0)
+			memo[i][s] = 1;
+		else if(s < 0 || i >= num.length)
+			memo[i][s] = 0;
+		else
+			memo[i][s] = recursive(i+1, s) + recursive(i+1, s-num[i]);
+		return memo[i][s];
+	}
+	return recursive(0, sum);
+}
+
+
+// Bottom up Dynamic Programming
+const countSubsets = function (num, sum){
+	if(sum === 0)
+		return 0;
+	let dp = new Array(num.length);
+	for(let i = 0; i < num.length; i++){
+		dp[i] = new Array(sum+1).fill(0);
+		dp[i][0] = 1;
+	}
+	dp[0][num[0]] = 1;
+	for(let i = 1; i < num.length; i++){
+		for(let s = 1; s <= sum; s++){
+			dp[i][s] = dp[i-1][s];
+			if(s >= num[i]){
+				dp[i][s] += dp[i-1][s-num[i]];
+			}
+		}
+	}
+	return dp[num.length-1][sum];
+}
+
+// I got it bang on! My logic was flawless hehe
+
+
+// we can make the space complexity even better to constant space
+const countSubsets = function(num, sum) {
+  const n = num.length;
+  const dp = Array(sum + 1).fill(0);
+  dp[0] = 1;
+
+  // with only one number, we can form a subset only when the required sum is equal to its value
+  for (let s = 1; s <= sum; s++) {
+    dp[s] = num[0] == s ? 1 : 0;
+  }
+
+  // process all subsets for all sums
+  for (let i = 1; i < num.length; i++) {
+    for (let s = sum; s >= 0; s--) {
+      if (s >= num[i]) {
+        dp[s] += dp[s - num[i]];
+      }
+    }
+  }
+
+  return dp[sum];
+};
