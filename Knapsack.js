@@ -370,4 +370,82 @@ const canPartition = function (num, sum) {
 //partition the set into two subsets with a minimum difference between their subset sums
 
 
+// simple recursive
+let canPartition = function (num){
+	let total = num.reduce((a, b) => a+b);
+	let minimum = +Infinity;
+	function recursive (i, sum){
+		if(i === num.length)
+			return;
+		let difference = Math.abs((total - sum) - sum);
+		minimum = Math.min(minimum, difference);
+		recursive(i+1, sum+num[i]);
+		recursive(i+1, sum);
+	}
+	recursive(0, 0);
+	return minimum;
+}
+// this is my solution
+// and while it may look like there is no problem, when we do memoization to it it might be a problem
+// another recursive method
+let canPartition = function (num){
+	function recursive(i, sum1, sum2){
+		if(i === num.length)
+			return Math.abs(sum1 - sum2);
+		const diff1 = recursive(i+1, sum1+num[i], sum2)
+		const diff2 = recursive(i+1, sum1, sum2+num[i]);
+		return Math.min(diff1, diff2);
+	}
+	return recursive(0, 0, 0);
+}
 
+
+
+// top down DP with memo
+let canPartition = function (num){
+	let memo = new Array(num.length);
+	for(let i = 0; i < num.length; i++)
+		memo[i] = [];
+	function recursive (i, sum1, sum2){
+		if(i === num.length)
+			return Math.abs(sum1 - sum2);
+		if(memo[i] !== undefined && memo[i][sum1] !== undefined)
+			return memo[i][sum1];
+		const diff1 = recursive(i+1, sum1+num[i], sum2)
+		const diff2 = recursive(i+1, sum1, sum2+num[i]);
+		if(memo[i] === undefined)
+			memo[i] = [];
+		memo[i][sum1] = Math.min(diff1, diff2);
+		return memo[i][sum1]
+	}
+	return recursive(0, 0, 0);
+}
+
+
+// bottom up Dynamic Programming
+let canPartition = function (num){
+	let total = num.reduce((a, b) => a+b);
+	let sum = Math.floor(total/2);
+	let dp = new Array(num.length);
+	for(let i = 0; i < num.length; i++){
+		dp[i] = new Array(sum+1).fill(false);
+	}
+	if(num[0] <= sum)
+		dp[0][num[0]] = true;
+	for(let i = 0; i < num.length; i++)
+		dp[i][0] = true;
+	for(let i = 1; i < num.length; i++){
+		for(let s = 1; s <= sum; s++){
+			if(dp[i-1][s])
+				dp[i][s] = true;
+			else if(s >= num[i])
+				dp[i][s] = dp[i-1][s-num[i]]
+		}
+	}
+	for(let s = sum; s >= 0; s--){
+		if(dp[num.length-1][s])
+			return (total-2*s)
+	}
+}
+
+// time and space complexity of O(N*S), where S is half of the total sum of all the numbers
