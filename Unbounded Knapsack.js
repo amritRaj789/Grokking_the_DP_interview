@@ -1,0 +1,85 @@
+/*Given the weights and profits of ‘N’ items, 
+we are asked to put these items in a knapsack that has a capacity ‘C’. 
+The goal is to get the maximum profit from the items in the knapsack. 
+The only difference between the 0/1 Knapsack problem and this problem is 
+that we are allowed to use an unlimited quantity of an item.*/
+
+/*now at every item at i, we earlier had 2 options: include or exclude
+now we can
+1) include the item and stay there
+2) include the item and move forward
+3) exclude the item and move forward
+*/
+// basic recursion
+let solveKnapsack = function(profits, weights, capacity) {
+    function recursive(weight, i){
+    	count++;
+    	if(weight <= 0 || i === profits.length)
+    		return 0;
+    	let profit = weight >= weights[i] ? profits[i] : 0;
+    	return Math.max(recursive(weight, i+1), recursive(weight-weights[i], i+1)+profit, recursive(weight-weights[i], i)+profit);
+    }
+    return recursive(capacity, 0);
+};
+// this may look short, but it is too costly.
+
+//other way
+let solveKnapsack = function(profits, weights, capacity) {
+    function recursive(weight, i){
+    	if(weight === 0 || i === profits.length)
+    		return 0;
+    	let profit1 = 0;
+    	if(weight >= weights[i]){
+    		profit1 = recursive(weight-weights[i], i) + profits[i];
+    	}
+    	let profit2 = recursive(weight, i+1);
+    	return Math.max(profit1, profit2);
+    }
+    return recursive(capacity, 0);
+};
+
+// top down with memoization
+let solveKnapsack = function(profits, weights, capacity) {
+    let memo = [];
+    let count = 0;
+    function recursive(weight, i){
+    	count++;
+    	if(weight === 0 || i === profits.length)
+    		return 0;
+    	if(memo[i] !== undefined && memo[i][weight] !== undefined)
+    		return memo[i][weight];
+    	let profit1 = 0;
+    	if(weight >= weights[i]){
+    		profit1 = recursive(weight-weights[i], i) + profits[i];
+    	}
+    	let profit2 = recursive(weight, i+1);
+    	memo[i] = memo[i] || [];
+    	memo[i][weight] = Math.max(profit1, profit2);
+    	return memo[i][weight];
+    }
+    let answer = recursive(capacity, 0);
+    console.log("the function ran for : ", count);
+    return answer;
+};
+var profits = [15, 50, 60, 90];
+var weights = [1, 3, 4, 5];
+console.log(`Total knapsack profit: ---> ${solveKnapsack(profits, weights, 8)}`);
+
+//bottom up DP
+let solveKnapsack = function (profits, weights, capacity){
+	let dp = Array(profits.length).fill(null).map(() => Array(capacity+1).fill(0));
+	for(let s = 1; s <= capacity; s++){
+		if(s >= weights[0])
+			dp[0][s] = profits[0]+dp[0][s-weights[0]];
+	}
+	for(let i = 1; i < profits.length; i++){
+		for(let s = 1; s <= capacity; s++){
+			dp[i][s] = dp[i-1][s];
+			if(weights[i] <= s){
+				dp[i][s] = Math.max(dp[i-1][s], dp[i][s-weights[i]]+profits[i]);
+			}
+		}
+	}
+	return dp[profits.length-1][capacity];
+}
+// O(N*C)
