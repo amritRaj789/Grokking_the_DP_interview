@@ -357,8 +357,23 @@ const canPartition = function (num, sum) {
   return dp[sum];
 };
 
-
-
+// DP with O(S) space complexity, S = sum
+const canPartition = function (num, sum){
+	let dp = Array(sum+1).fill(false);
+	dp[0] = true;
+	if(num[0] <= sum)
+		dp[num[0]] = true;
+	for(let i = 1; i < num.length; i++){
+		for(let s = sum; s >= 1; s--){
+			if(!dp[s]){
+				if(s >= num[i]){
+					dp[s] = dp[s-num[i]];
+				}
+			}
+		}
+	}
+	return dp[sum];
+}
 
 
 
@@ -464,9 +479,7 @@ const countSubsets = function (num, sum){
 			return 1
 		if(i === num.length || s < 0)
 			return 0
-		else{
-			return recursive(i+1, s) + recursive(i+1, s-num[i]);
-		}
+		return recursive(i+1, s) + recursive(i+1, s-num[i]);
 	}
 	return recursive(0, sum);
 }
@@ -504,7 +517,8 @@ const countSubsets = function (num, sum){
 		dp[i] = new Array(sum+1).fill(0);
 		dp[i][0] = 1;
 	}
-	dp[0][num[0]] = 1;
+	if(num[0] <= sum)
+		dp[0][num[0]] = 1;
 	for(let i = 1; i < num.length; i++){
 		for(let s = 1; s <= sum; s++){
 			dp[i][s] = dp[i-1][s];
@@ -541,3 +555,63 @@ const countSubsets = function(num, sum) {
 
   return dp[sum];
 };
+
+
+
+
+// TARGET SUM
+/*Given a set of positive numbers (non zero) and a target sum ‘S’. Each number should be
+ assigned either a ‘+’ or ‘-’ sign. We need to find out total ways to assign symbols to 
+ make the sum of numbers equal to target ‘S*/
+
+ const findTargetSubsets = function (num, s){
+ 	function recursive(i, s){
+ 		if(i === num.length && s === 0)
+ 			return 1
+ 		if(i === num.length && s !== 0)
+ 			return 0
+ 		return recursive(i+1, s-num[i]) + recursive(i+1, s+num[i]);
+ 	}
+ 	return recursive(0, s);
+ }
+
+// or we could also do it like find subset sum difference equal to 0
+// or we could also do it as find subset sum equal to total/2
+
+
+
+/*This problem follows the 0/1 Knapsack pattern and can be converted into Count of Subset Sum. Let’s dig into this.
+We are asked to find two subsets of the given numbers whose difference is equal to the given target ‘S’. Take the first example above. As we saw, one solution is {+1-1-2+3}. So, the two subsets we are asked to find are {1, 3} & {1, 2} because,
+    (1 + 3) - (1 + 2 ) = 1
+Now, let’s say ‘Sum(s1)’ denotes the total sum of set ‘s1’, and ‘Sum(s2)’ denotes the total sum of set ‘s2’. So the required equation is:
+    Sum(s1) - Sum(s2) = S
+This equation can be reduced to the subset sum problem. Let’s assume that ‘Sum(num)’ denotes the total sum of all the numbers, therefore:
+    Sum(s1) + Sum(s2) = Sum(num)
+Let’s add the above two equations:
+    => Sum(s1) - Sum(s2) + Sum(s1) + Sum(s2) = S + Sum(num)
+    => 2 * Sum(s1) =  S + Sum(num)
+    => Sum(s1) = (S + Sum(num)) / 2
+This essentially converts our problem to: “Find count of subsets of the given numbers whose sum is equal to”,
+    => (S + Sum(num)) / 2
+*/
+// bottom up DP solution
+const findTargetSubsets = function (num, s){
+	let total = num.reduce((a, b) => a + b)
+	if((total+s) % 2)
+		return false;
+	const sum = (total+s)/2;
+	let dp = new Array(num.length);
+	for(let i = 0; i < num.length; i++){
+		dp[i] = new Array(sum+1).fill(0)
+		dp[i][0] = 1;
+	}
+	dp[0][num[0]] = 1;
+	for(let i = 1; i < num.length; i++){
+		for(let s = 1; s <= sum; s++){
+			dp[i][s] = dp[i-1][s];
+			if(s >= num[i])
+				dp[i][s] += dp[i-1][s-num[i]];
+		}
+	}
+	return dp[num.length-1][sum];
+}
