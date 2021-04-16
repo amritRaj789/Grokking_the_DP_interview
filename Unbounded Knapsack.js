@@ -145,3 +145,63 @@ const solveRodCutting = function (lengths, prices, n){
 	}
 	return dp[n];
 }
+
+// Coin Change
+/*Given an infinite supply of ‘n’ coin denominations and a total money amount, 
+we are asked to find the total number of distinct ways to make up that amount.
+*/
+// simple recursive
+let countChange = function (denominations, total){
+	let count = 0;
+	function recursive(i, total){
+		count++;
+		if(total === 0)
+			return 1
+		if(i === denominations.length)
+			return 0;
+		return recursive(i+1, total) + (total >= denominations[i] ? recursive(i, total-denominations[i]) : 0);
+	}
+	let answer = recursive(0, total);
+	console.log("the function ran for : ", count);
+	return answer;
+}
+console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 5)}`);
+
+
+// top down with memoization
+let countChange = function (denominations, total){
+	let count = 0;
+	let memo = [];
+	function recursive(i, total){
+		count++;
+		if(total === 0)
+			return 1
+		if(i === denominations.length)
+			return 0;
+		if(memo[i] !== undefined && memo[i][total] !== undefined)
+			return memo[i][total];
+		memo[i] = memo[i] || [];
+		memo[i][total] = recursive(i+1, total) + (total >= denominations[i] ? recursive(i, total-denominations[i]) : 0);
+		return memo[i][total];
+	}
+	let answer = recursive(0, total);
+	console.log("the function ran for : ", count);
+	return answer;
+}
+console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 5)}`);
+
+
+// bottom up DP
+// I have directly written the most optimized one because I am so damn confident
+let countChange = function (denominations, total){
+	let dp = Array(total+1).fill(0);
+	dp[0] = 1;
+	for(let i = 0; i < denominations.length; i++){
+		for(let s = 1; s <= total; s++){
+			if(denominations[i] <= s)
+				dp[s] += dp[s-denominations[i]];
+		}
+	}
+	return dp[total];
+}
+console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 5)}`);
