@@ -83,3 +83,65 @@ let solveKnapsack = function (profits, weights, capacity){
 	return dp[profits.length-1][capacity];
 }
 // O(N*C)
+
+
+
+
+
+
+
+
+
+
+
+// ROD CUTTING
+
+/*Given a rod of length ‘n’, we are asked to cut the rod and sell the pieces in a way that will maximize the profit. 
+We are also given the price of every piece of length ‘i’ where ‘1 <= i <= n’.*/
+
+// simple recursive
+const solveRodCutting = function (lengths, prices, n){
+	let max = 0;
+	function recursive(length, profit){
+		if(length === 0){
+			max = Math.max(max, profit);
+			return
+		}
+		let temp = 1;
+		while(temp <= length){
+			recursive(length-temp, profit+prices[temp-1]);
+			temp++;
+		}
+	}
+	recursive(n, 0);
+	return max;
+}
+// bottom top DP
+const solveRodCutting = function (lengths, prices, n){
+	let dp = Array(n).fill(null).map(() => Array(n+1).fill(0));
+	for(let i = 1; i <= n; i++){
+		dp[0][i] = i*prices[0];
+	}
+	for(let i = 1; i < n; i++){
+		for(let length = 1; length <= n; length++){
+			if(length >= i+1){
+				dp[i][length] = Math.max(dp[i][length-i-1]+prices[i], dp[i-1][length]);
+			}
+			else
+				dp[i][length] = dp[i-1][length];
+		}
+	}
+	return dp[n-1][n];
+}
+
+// even more concise dp with O(n) space complexity
+const solveRodCutting = function (lengths, prices, n){
+	let dp = Array(n+1).fill(0);
+	for(let i = 0; i < n; i++){
+		for(let length = 1; length <= n; length++){
+			if(length >= i+1)
+				dp[length] = Math.max(dp[length-i-1]+prices[i], dp[length])
+		}
+	}
+	return dp[n];
+}
