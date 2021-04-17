@@ -334,3 +334,59 @@ console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 11)}`)
 console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 7)}`);
 console.log(`Number of ways to make change: ---> ${countChange([3, 5], 7)}`);
 console.timeEnd("timer");
+
+
+
+
+
+
+
+
+
+/// Maximum Ribbon Cut
+
+
+/*We are given a ribbon of length ‘n’ and a set of possible ribbon lengths. We need to cut the ribbon into the maximum number of pieces that comply with the above-mentioned possible lengths. 
+Write a method that will return the count of pieces.*/
+
+
+//simple recursive
+// just like in minimum coin change, here we need to find maximum
+// so starting from the start, the first non null return value we get will automatically 
+// be the maximum value
+let countRibbonPieces = function(ribbonLengths, total) {
+  function recursive(i, total, length){
+  	if(total === 0)
+  		return length;
+  	if(i === ribbonLengths.length)
+  		return null
+  	if(total >= ribbonLengths[i]){
+  		let value1 = recursive(i, total-ribbonLengths[i], length+1);
+  		if(value1)
+  			return value1;
+  	}
+  	return recursive(i+1, total, length);
+  }
+  let answer = recursive(0, total, 0);
+  if(answer == null)
+  	return -1;
+  return answer;
+};
+// note: this won't work if ribbonlengths is not sorted in ascending order
+
+
+// bottom up Dynamic Programming
+// I straight away did the more space optimized dp one, because I am a pro! jk jk
+let countRibbonPieces = function(ribbonLengths, total){
+	let dp = Array(total+1).fill(-Infinity);
+	dp[0] = 0;
+	for(let i = 0; i < ribbonLengths.length; i++){
+		for(let s = 1; s <= total; s++){
+			if(s >= ribbonLengths[i])
+				dp[s] = Math.max(dp[s], dp[s-ribbonLengths[i]] + 1)
+		}
+	}
+	if(dp[total] === -Infinity)
+		return -1
+	return dp[total];
+}
