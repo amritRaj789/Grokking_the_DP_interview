@@ -41,7 +41,7 @@ let findLPSLength = function (st){
 }
 
 
-// bottom up dynamic programming
+// bottom up dynamic programming..
 let findLPSLength = function (st){
 	let dp = Array(st.length).fill(null).map(() => Array(st.length).fill(0));
 	for(let i = 0; i < st.length; i++)
