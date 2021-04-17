@@ -205,3 +205,132 @@ let countChange = function (denominations, total){
 	return dp[total];
 }
 console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 5)}`);
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Minimum Coin Change
+/*Given an infinite supply of ‘n’ coin denominations and a total money amount, we are asked 
+to find the minimum number of coins needed to make up that amount.*/
+
+
+
+
+// simple recursive, It is both mine and Educative also does the same
+let countChange = function (denominations, total){
+	let count = 0;
+	function recursive (i, total, length){
+		count++;
+		if(total === 0)
+			return length;
+		if(i === denominations.length)
+			return +Infinity;
+		if(total >= denominations[i])
+			return Math.min(recursive(i, total-denominations[i], length+1), recursive(i+1, total, length));
+		else
+			return recursive(i+1, total, length);
+	}
+	let answer = recursive(0, total, 0);
+	console.log("the function ran for : ", count);
+	if(answer === +Infinity)
+		return -1
+	return answer;
+}
+console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 5)}`); //41 times
+console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 11)}`); //197 times
+console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 7)}`);  //77 times
+console.log(`Number of ways to make change: ---> ${countChange([3, 5], 7)}`);   // 11 times
+
+
+
+
+// It got me thinking, if we are finding the minimum then why not just start from the end of denominations
+// since the denominations array is in descending order, the higher denominations would be more towards the end
+// in this way, we don't have to compare minimum between two values
+// but rather the first non null (acceptable) value that the function returns will automatically be the minimum
+// this drastically reduces the function calls. It is so insane that it might be better than dp solutions
+console.time("timer");
+let countChange = function (denominations, total){
+	let count = 0;
+	function recursive (i, total, length){
+		count++;
+		if(total === 0)
+			return length;
+		if(i === -1)
+			return null;
+		if(total >= denominations[i]){
+			let value1 = recursive(i, total-denominations[i], length+1);
+			if(value1 !== null)
+				return value1
+		}
+		return recursive(i-1, total, length);
+	}
+	let answer = recursive(denominations.length-1, total, 0);
+	console.log("the function ran for: ", count);
+	if(answer === null)
+		return -1
+	return answer;
+}
+console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 5)}`); //4 times
+console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 11)}`); //6 times
+console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 7)}`); //6 times
+console.log(`Number of ways to make change: ---> ${countChange([3, 5], 7)}`); // 10 times
+console.timeEnd("timer");
+
+// bottom up DP
+let countChange = function (denominations, total){
+	let dp = Array(denominations.length).fill(null).map(() => Array(total+1).fill(+Infinity));
+	for(let i = 0; i < denominations.length; i++)
+		dp[i][0] = 0;
+    for(let s = 1; s <= total; s++){
+        if(denominations[0] <= s)
+            dp[0][s] = dp[0][s-denominations[0]] + 1;
+    }
+	for(let i = 1; i < denominations.length; i++){
+		for(let s = 1; s <= total; s++){
+			if(s >= denominations[i]){
+				dp[i][s] = Math.min(dp[i][s-denominations[i]] + 1, dp[i-1][s]);
+			}
+            else
+                dp[i][s] = dp[i-1][s];
+		}
+	}
+	let answer = dp[denominations.length-1][total];
+	if(answer === Infinity)
+		return -1;
+	return answer;
+}
+
+// Even more space optimized DP. I am really getting good at this
+console.time("timer");
+let countChange = function (denominations, total){
+	//let count = 0;
+	let dp = Array(total+1).fill(+Infinity);
+	dp[0] = 0;
+	for(let i = 0; i < denominations.length; i++){
+		for(let s = 1; s <= total; s++){
+			//count++;
+			if(s >= denominations[i])
+				dp[s] = Math.min(dp[s-denominations[i]] + 1, dp[s]);
+		}
+	}
+	let answer = dp[total];
+	//console.log("the function ran for : ", count);
+	if(answer === Infinity)
+		return -1;
+	return answer;
+}
+console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 5)}`);
+console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 11)}`);
+console.log(`Number of ways to make change: ---> ${countChange([1, 2, 3], 7)}`);
+console.log(`Number of ways to make change: ---> ${countChange([3, 5], 7)}`);
+console.timeEnd("timer");
