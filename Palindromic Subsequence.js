@@ -156,3 +156,50 @@ let findCPS = function (st){
 }
 console.log('Length of LPS: ---> ' + findCPS('pqr'));
 // O(n^2)
+
+
+
+
+
+
+
+
+// Minimum Deletions in a string to make it palindrome
+
+
+//Given a string, find the minimum number of characters that we can remove to make it a palindrome.
+
+// so you find the length of longest palindromic subsequence and subtract it from total length
+
+// bottom up DP
+
+let findMinimumDeletions = function (st){
+	let dp = Array(st.length).fill(null).map(() => Array(st.length).fill(0));
+
+	for(let i = 0; i < st.length; i++){
+		dp[i][i] = 1;
+	}
+
+	for(let start = st.length-1; start >= 0; start--){
+		for(let end = start+1; end < st.length; end++){
+			if(st[start] === st[end])
+				dp[start][end] = 2 + dp[start+1][end-1];
+			else
+				dp[start][end] = Math.max(dp[start+1][end], dp[start][end-1]);
+		}
+	}
+
+	return st.length - dp[0][st.length-1];
+}
+// O(n^2)
+
+
+// This question will also work for similar questions such as: 
+
+
+// Minimum insertions in a string to make it a palindrome
+
+
+// Find if a string is K-Palindromic
+// Any string is K palindromic if it can be transformed into a palindrome
+//by removing at most K elements
