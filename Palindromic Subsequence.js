@@ -20,6 +20,8 @@ let findLPSLength = function (st){
 	return recursive(0, st.length-1);
 }
 
+console.log(findLPSLength("bdsgjbdb"))
+
 //top down with memoization
 let findLPSLength = function (st){
 	let memo = [];
@@ -119,3 +121,38 @@ let findLPSLength = function (st){
 // THERE IS AN ASTONISHINGLY MORE EFFICIENT LINEAR TIME ALGORITHM : MANACHER'S ALGO
 // read more on it later
 // imma go grab a diet coke first
+
+
+
+
+
+
+
+// COUNT OF PALINDROMIC SUBSTRINGS
+
+/*Given a string, find the total number of palindromic substrings in it. 
+Please note we need to find the total number of substrings and not subsequences.*/
+
+// Idk why educative has no recursive solution for this
+// this is their bottom up DP solution
+let findCPS = function (st){
+	let count = 0;
+	let dp = Array(st.length).fill(null).map(() => Array(st.length).fill(false));
+	for(let i = 0; i < st.length; i++){
+		dp[i][i] = true;
+		count++;
+	}
+	for(let start = st.length-1; start >= 0; start--){
+		for(let end = start+1; end < st.length; end++){
+			if(st[end] === st[start]){
+				if(end - start === 1 || dp[start+1][end-1]){
+					dp[start][end] = true;
+					count++;
+				}
+			}
+		}
+	}
+	return count;
+}
+console.log('Length of LPS: ---> ' + findCPS('pqr'));
+// O(n^2)
