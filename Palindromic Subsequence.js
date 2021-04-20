@@ -203,3 +203,90 @@ let findMinimumDeletions = function (st){
 // Find if a string is K-Palindromic
 // Any string is K palindromic if it can be transformed into a palindrome
 //by removing at most K elements
+
+
+
+
+
+
+
+// Palindromic Partitioning
+
+/*Given a string, we want to cut it into pieces such that each piece is a palindrome. 
+Write a function to return the minimum number of cuts needed.*/
+
+// this is by far the worst question in this course. The creators have done a lousy job in explaining
+// it is also full with mistakes or lapses in explanations
+
+#red #red #red #red #red #red #red #red #red #red #red
+let findMPPCuts = function(st){
+	function recursive(start,end){
+		if(start >= end || isPalindromic(start, end))
+			return 0
+		let minimumCuts = end - start;
+		for(let i = start; i <= end; i++){
+			if(isPalindromic(start, i)){
+				minimumCuts = Math.min(minimumCuts, 1 + recursive(i+1, end));
+			}
+		}
+		return minimumCuts;
+	}
+
+	function isPalindromic (left, right){
+		while(left <= right){
+			if(st[left] !== st[right])
+				return false
+			left++;
+			right--;
+		}
+		return true;
+	}
+
+	return recursive(0, st.length-1);
+}
+	
+// top down with memoization
+const findMPPCuts = function(st) {
+	let dp = [];
+  function findMPPCutsRecursive(st, startIndex, endIndex) {
+  	if(dp[startIndex] !== undefined && dp[startIndex][endIndex] !== undefined)
+  		return dp[startIndex][endIndex];
+    // we don't need to cut the string if it is a palindrome
+    if (startIndex >= endIndex || isPalindrome(st, startIndex, endIndex)) {
+      return 0;
+    }
+    dp[startIndex] = dp[startIndex] || [];
+    // at max, we need to cut the string into its 'length-1' pieces
+    let minimumCuts = endIndex - startIndex;
+    for (let i = startIndex; i <= endIndex; i++) {
+      if (isPalindrome(st, startIndex, i)) {
+        // we can cut here as we have a palindrome from 'startIndex' to 'i'
+        minimumCuts = Math.min(minimumCuts, 1 + findMPPCutsRecursive(st, i + 1, endIndex));
+      }
+    }
+    dp[startIndex][endIndex] = minimumCuts;
+    return minimumCuts;
+  }
+  let dp2 = [];
+  function isPalindrome(st, x, y) {
+  	if(dp2[x] !== undefined && dp2[x][y] !== undefined)
+  		return dp2[x][y];
+  	let copyX = x;
+  	let copyY = y;
+  	dp2[copyX] = dp2[copyX] || [];
+    while (x <= y) {
+      if (st[x++] != st[y--]) {
+      	dp2[copyX][copyY] = false;
+        return false;
+      }
+    }
+    dp2[copyX][copyY] = true;
+    return true;
+  }
+
+  return findMPPCutsRecursive(st, 0, st.length - 1);
+};
+
+
+// bottom up
+Incomplete I am frustrated by this problem!
