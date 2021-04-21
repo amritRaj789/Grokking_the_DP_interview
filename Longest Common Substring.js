@@ -165,3 +165,55 @@ let findMDI = function (s1, s2){
 	console.log(`Minimum deletions needed : ${deletions}`);
 	console.log(`Minimum insertions needed : ${insertions}`);
 }
+
+
+// Longest Increasing Subsequence
+
+/*Given a number sequence, find the length of its Longest Increasing Subsequence (LIS). 
+In an increasing subsequence, all the elements are in increasing order (from lowest to highest).*/
+
+
+
+// recursive brute-force
+const findLISLength = function(nums){
+	function recursive(currentIndex, previousIndex){
+		if(currentIndex === nums.length)
+			return 1;
+		if(nums[currentIndex] > nums[previousIndex])
+			return 1 + recursive(currentIndex+1, currentIndex)
+		else
+			return Math.max(recursive(currentIndex+1, currentIndex), recursive(currentIndex+1, previousIndex))
+	}
+	return recursive(1, 0);
+}
+
+// top down with memoization
+const findLISLength = function (nums){
+	let memo = [];
+	function recursive(currentIndex, previousIndex){
+		if(currentIndex === nums.length)
+			return 1;
+		memo[currentIndex] = memo[currentIndex] || [];
+		if(memo[currentIndex][previousIndex] === undefined){
+			if(nums[currentIndex] > nums[previousIndex])
+				memo[currentIndex][previousIndex] = 1 + recursive(currentIndex+1, currentIndex);
+			else
+				memo[currentIndex][previousIndex] = Math.max(recursive(currentIndex+1, currentIndex), recursive(currentIndex+1, previousIndex));
+		}
+		return memo[currentIndex][previousIndex];
+	}
+	return recursive(1, 0);
+}
+// bottom up DP
+const findLISLength = function (nums){
+	let dp = Array(nums.length).fill(1);
+	let maxLength = 1;
+	for(let i = 1; i < nums.length; i++){
+		for(let j = 0; j < i; j++){
+			if(nums[i] > nums[j])
+				dp[i] = Math.max(dp[i], 1+dp[j])
+		}
+		maxLength = Math.max(maxLength, dp[i]);
+	}
+	return maxLength;
+}
