@@ -339,3 +339,44 @@ const findSCSLength = function (s1, s2){
 	}
 	return dp[s1.length][s2.length];
 }
+
+
+
+
+
+
+
+
+
+// Minimum Deletions to Make a Sequence Sorted
+//Given a number sequence, find the minimum number of elements that should be deleted to make the remaining sequence sorted.
+
+//just find the length of longest increasing subsequence and subtract it from total length
+
+// recursive brute force
+const findMinimumDeletions = function (nums){
+	function recursive(curIndex, prevIndex){
+		if(curIndex === nums.length)
+			return 1
+		if(nums[curIndex] > nums[prevIndex])
+			return 1 + recursive(curIndex+1, curIndex);
+		return Math.max(recursive(curIndex+1, curIndex), recursive(curIndex+1, prevIndex))
+	}
+	return nums.length - recursive(1, 0);
+}
+
+// skipping top down
+
+//bottom up DP
+const findMinimumDeletions = function (nums){
+	let dp = Array(nums.length).fill(1);
+	let maxLength = 1;
+	for(let i = 1; i < nums.length; i++){
+		for(let j = 0; j < i; j++){
+			if(nums[i] > nums[j])
+				dp[i] = Math.max(dp[i], 1+dp[j]);
+		}
+		maxLength = Math.max(maxLength, dp[i]);
+	}
+	return nums.length-maxLength;
+}
