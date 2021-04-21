@@ -277,3 +277,65 @@ const findMSIS = function (nums){
 	}
 	return maxSum;
 }
+
+
+
+// Shortest Common Super-Sequence
+
+// Given 2 sequences 'S1' and 'S2', find the length of the shortest sequence which has s1 and s2 as subsequences
+
+
+// this looks very similar to Longest Common Subsequence, so we will find that first and use it to get the final answer
+
+// recursive brute force
+const findSCSLength = function(s1, s2){
+	function recursive(index1, index2){
+		if(index1 === s1.length || index2 === s2.length)
+			return 0
+		if(s1[index1] === s2[index2])
+			return 1 + recursive(index1+1, index2+1);
+		else
+			return Math.max(recursive(index1+1, index2), recursive(index1, index2+1));
+	}
+	let length = recursive(0, 0);
+	if(s1.length <= s2.length)
+		return s2.length + s1.length - length;
+	else
+		return s1.length + s2.length - length;
+}
+
+// bottom up DP
+const findSCSLength = function (s1, s2){
+	let dp = Array(s1.length+1).fill(null).map(() => Array(s2.length+1).fill(0));
+	for(let i = 1; i <= s1.length; i++){
+		for(let j = 1; j <= s2.length; j++){
+			if(s1[i-1] === s2[j-1])
+				dp[i][j] = 1 + dp[i-1][j-1];
+			else
+				dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+		}
+	}
+	let length = dp[s1.length][s2.length];
+	if(s1.length <= s2.length)
+		return s2.length + s1.length-length;
+	else
+		return s1.length + s2.length-length;
+}
+
+// bottom up DP educative's way
+const findSCSLength = function (s1, s2){
+	let dp = Array(s1.length+1).fill(null).map(() => Array(s2.length+1).fill(0));
+	for(let i = 0; i <= s1.length; i++)
+		dp[i][0] = i;
+	for(let j = 0; j <= s2.length; j++)
+		dp[0][j] = j;
+	for(let i = 1; i <= s1.length; i++){
+		for(let j = 1; j <= s2.length; j++){
+			if(s1[i-1] === s2[j-1])
+				dp[i][j] = 1 + dp[i-1][j-1];
+			else
+				dp[i][j] = 1 + Math.min(dp[i-1][j], dp[i][j-1]);
+		}
+	}
+	return dp[s1.length][s2.length];
+}
