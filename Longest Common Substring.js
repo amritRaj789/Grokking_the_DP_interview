@@ -217,3 +217,63 @@ const findLISLength = function (nums){
 	}
 	return maxLength;
 }
+// O(n^2) and O(n)
+
+
+
+
+
+// Maximum Sum increasing Subsequence
+/*Given a number sequence, find the increasing subsequence with the highest sum. 
+Write a method that returns the highest sum.*/
+
+// recursive brute-force
+const findMSIS = function (nums){
+	function recursive(currentIndex, previousIndex){
+		if(currentIndex === nums.length)
+			return nums[previousIndex];
+		if(nums[previousIndex] < 0)
+			return recursive(currentIndex+1, currentIndex);
+		if(nums[currentIndex] > nums[previousIndex])
+			return nums[previousIndex] + recursive(currentIndex+1, currentIndex);
+		return Math.max(recursive(currentIndex+1, currentIndex), recursive(currentIndex+1, previousIndex));
+	}
+	return recursive(1, 0);
+}
+
+//  top down with memoization
+const findMSIS = function (nums){
+	let memo = [];
+	function recursive(currentIndex, previousIndex){
+		if(currentIndex === nums.length)
+			return nums[previousIndex];
+		memo[currentIndex] = memo[currentIndex] || [];
+		if(memo[currentIndex][previousIndex] === undefined){
+			if(nums[previousIndex] < 0)
+				memo[currentIndex][previousIndex] = recursive(currentIndex+1, currentIndex);
+			else if(nums[currentIndex] > nums[previousIndex])
+				memo[currentIndex][previousIndex] = nums[previousIndex] + recursive(currentIndex+1, currentIndex);
+			else
+				memo[currentIndex][previousIndex] = Math.max(recursive(currentIndex+1, currentIndex), recursive(currentIndex+1, previousIndex));
+		}
+		return memo[currentIndex][previousIndex];
+	}
+	return recursive(1, 0);
+}
+
+
+// bottom up DP
+const findMSIS = function (nums){
+	let dp = [...nums];
+	let maxSum = dp[0];
+	for(let i = 1; i < nums.length; i++){
+		if(nums[i] > 0){
+			for(let j = 0 ; j < i; j++){
+				if(nums[i] > nums[j])
+				dp[i] = Math.max(nums[i] + dp[j], dp[i]);
+			}
+		}
+		maxSum = Math.max(maxSum, dp[i])
+	}
+	return maxSum;
+}
