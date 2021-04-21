@@ -441,3 +441,66 @@ const findLRSLength = function (str){
 	}
 	return dp[str.length][str.length];
 }
+
+
+
+
+
+// Subsequence Pattern Matching
+//Given a string and a pattern, write a method to count the number of times
+// the pattern appears in the string as a subsequence
+
+const findSPMCount = function (str, pat){
+	function recursive(index1, index2){
+		if(index2 === pat.length)
+			return 1;
+		if(index1 === str.length)
+			return 0;
+		if(str[index1] === pat[index2])
+			return recursive(index1+1, index2+1) + recursive(index1+1, index2)
+		else
+			return recursive(index1+1, index2);
+	}
+	return recursive(0, 0);
+}
+
+// oh yeah ! nailed this one!
+
+
+// top down with memo
+const findSPMCount = function (str, pat){
+	let memo = [];
+	function recursive(index1, index2){
+		if(index2 === pat.length)
+			return 1;
+		if(index1 === str.length)
+			return 0;
+		memo[index1] = memo[index1] || [];
+		if(memo[index1][index2] === undefined){
+			if(str[index1] === pat[index2])
+				 memo[index1][index2] = recursive(index1+1, index2+1) + recursive(index1+1, index2)
+			else
+				memo[index1][index2] = recursive(index1+1, index2);
+		}
+		return memo[index1][index2];
+	}
+	return recursive(0, 0);
+}
+
+
+// bottom up DP
+const findSPMCount = function(str, pat){
+	let dp = Array(pat.length+1).fill(null).map(() => Array(str.length+1).fill(0));
+	for(let j = 0; j <= str.length; j++)
+		dp[0][j] = 1;
+	for(let i = 1; i <= pat.length; i++){
+		for(let j = 1; j <= str.length; j++){
+			dp[i][j] = dp[i][j-1];
+			if(pat[i-1] === str[j-1])
+				dp[i][j] += dp[i-1][j-1];
+		}
+	}
+	return dp[pat.length][str.length];
+}
+
+// fuck yeah! I am so satisfied! 
