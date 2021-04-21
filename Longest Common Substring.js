@@ -132,3 +132,36 @@ let findLCSLength = function (s1, s2){
 	}
 	return dp[s1.length%2][s2.length];
 }
+
+
+
+
+
+
+// Minimum insertions and deletions to transform a string to another
+
+
+// Given strings s1 and s2, we need to transform s1 into s2 by deleting and inserting characters. 
+// Write a function to calculate the count of the minimum number of deletion and insertion operations.
+
+
+
+// This is similar to Longest Common Subsequence. We find LCS length and use it calculate deletion and insertion count
+
+// bottom up DP
+let findMDI = function (s1, s2){
+	let dp = Array(2).fill(null).map(() => Array(s2.length+1).fill(0));
+	for(let i = 1; i <= s1.length; i++){
+		for(let j = 1; j <= s2.length; j++){
+			if(s1[i-1] === s2[j-1])
+				dp[i%2][j] = 1 + dp[(i+1)%2][j-1];
+			else
+				dp[i%2][j] = Math.max(dp[(i+1)%2][j], dp[i%2][j-1]);
+		}
+	}
+	let length = dp[s1.length%2][s2.length];
+	let deletions = s1.length >= s2.length ? s1.length-length : s2.length-length;
+	let insertions = s1.length >= s2.length ? s2.length-length : s1.length-length;
+	console.log(`Minimum deletions needed : ${deletions}`);
+	console.log(`Minimum insertions needed : ${insertions}`);
+}
