@@ -380,3 +380,64 @@ const findMinimumDeletions = function (nums){
 	}
 	return nums.length-maxLength;
 }
+
+
+
+
+
+// Longest Repeating Subsequence
+//red red red red red red red red red red red red red red red
+
+
+
+/*Given a sequence, find the length of its longest repeating subsequence (LRS). 
+A repeating subsequence will be the one that appears at least twice in the original sequence and is not overlapping 
+(i.e. none of the corresponding characters in the repeating subsequences have the same index).*/
+
+
+// generate subsequence, check it's presence in the rest of the string
+// for checking the presence of a in b, we can do longest common subequence === a.length
+// max could be Math.floor(nums.length/2)
+const findLRSLength = function(str) {
+  function recursive(index1, index2){
+  	if(index1 === str.length || index2 === str.length)
+  		return 0;
+  	if(index1 === index2){
+  		return Math.max(recursive(index1+1, index2), recursive(index1, index2+1));
+  	}
+  	else if(str[index1] === str[index2])
+  		return 1 + recursive(index1+1, index2+1);
+  	else
+  		return Math.max(recursive(index1+1, index2), recursive(index1, index2+1));
+  }
+  return recursive(0, 0);
+};
+
+// which can also be written as
+const findLRSLength = function (str){
+	function recursive(index1, index2){
+		if(index1 === str.length || index2 === str.length)
+			return 0;
+		if(index1 !== index2 && str[index1] === str[index2])
+			return 1 + recursive(index1+1, index2+1);
+		return Math.max(recursive(index1+1, index2), recursive(index1, index2+1));
+	}
+	return recursive(0, 0);
+}
+
+// skipping top down
+
+
+// bottom up
+const findLRSLength = function (str){
+	let dp = Array(str.length+1).fill(null).map(() => Array(str.length+1).fill(0));
+	for(let i = 1; i <= str.length; i++){
+		for(let j = 1; j <= str.length; j++){
+			if(i !== j && str[i-1] === str[j-1])
+				dp[i][j] = 1 + dp[i-1][j-1];
+			else
+				dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+		}
+	}
+	return dp[str.length][str.length];
+}
