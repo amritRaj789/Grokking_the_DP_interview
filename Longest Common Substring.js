@@ -572,3 +572,82 @@ const findLBSLength = function (nums){
 	}
 	return maxLength;
 }
+
+
+
+
+
+
+
+// Longest Alternating Subsequence
+/*Given a number sequence, find the length of its Longest Alternating Subsequence (LAS). 
+A subsequence is considered alternating if its elements are in alternating order*/
+
+
+
+// recursive brute force
+const findLASLength = function (nums){
+	let maxLength = 1;
+	function recursive(curIndex, prevIndex, length, increasing){
+		if(curIndex === nums.length){
+			maxLength = Math.max(maxLength, length+1);
+			return;
+		}
+		if((increasing && nums[curIndex] < nums[prevIndex]) || (!increasing && nums[curIndex] > nums[prevIndex]))
+				recursive(curIndex+1, curIndex, length+1, !increasing);
+		else{
+				recursive(curIndex+1, prevIndex, length, increasing);
+				recursive(curIndex+1, curIndex, 1, increasing);
+		}
+	}
+	recursive(1, 0, 0, true);
+	return maxLength;
+}
+
+// this is educative's method but it can fuck off since it makes more recursive calls than mine and is longer and messier and uglier
+/// AAAArrrrggghhhhH!!!!
+const findLASLength = function(nums) {
+  function findLASLengthRecursive(nums, previousIndex, currentIndex, isAsc) {
+    if (currentIndex === nums.length) return 0;
+
+    let c1 = 0;
+    // if ascending, the next element should be bigger
+    if (isAsc) {
+      if (previousIndex == -1 || nums[previousIndex] < nums[currentIndex])
+        c1 = 1 + findLASLengthRecursive(nums, currentIndex, currentIndex + 1, !isAsc);
+    } else {
+      // if descending, the next element should be smaller
+      if (previousIndex == -1 || nums[previousIndex] > nums[currentIndex])
+        c1 = 1 + findLASLengthRecursive(nums, currentIndex, currentIndex + 1, !isAsc);
+    }
+    // skip the current element
+    let c2 = findLASLengthRecursive(nums, previousIndex, currentIndex + 1, isAsc);
+    return Math.max(c1, c2);
+  }
+  // we have to start with two recursive calls, one where we will consider that the first element is
+  // bigger than the second element and one where the first element is smaller than the second element
+  return Math.max(
+    findLASLengthRecursive(nums, -1, 0, true),
+    findLASLengthRecursive(nums, -1, 0, false)
+  );
+};
+
+// skipping top down
+// bottom up DP
+
+const findLASLength = function (nums){
+    let dp = Array(nums.length).fill([1,1]);
+    let maxLength = 1;
+    for(let i = 1; i < nums.length; i++){
+        for(let j = 0; j < i; j++){
+            if(nums[i] > nums[j])
+                dp[i][0] = Math.max(dp[i][0], 1+dp[j][1])
+            else
+                dp[i][1] = Math.max(dp[i][1], 1+dp[j][0]);
+        }
+        maxLength = Math.max(maxLength, ...dp[i]);
+    }
+    return maxLength;
+}
+
+// fuck yeah yeah yeah!!!! nailed it 
