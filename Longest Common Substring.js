@@ -504,3 +504,71 @@ const findSPMCount = function(str, pat){
 }
 
 // fuck yeah! I am so satisfied! 
+
+
+
+
+
+
+
+// Longest Bitonic Subsequence
+/*Given a number sequence, find the length of its Longest Bitonic Subsequence (LBS). 
+A subsequence is considered bitonic if it is monotonically increasing and then monotonically decreasing.*/
+
+// recursive brute force
+
+
+const findLBSLength = function (nums){
+    let maxLength = 0;
+    function recursive(curIndex, prevIndex, increasing, length){
+        if(curIndex === nums.length){
+            maxLength = Math.max(maxLength, length+1);
+            return
+        }
+        if(increasing){
+            if(nums[curIndex] > nums[prevIndex])
+                recursive(curIndex+1, curIndex, increasing, length+1);
+            else if(nums[curIndex] < nums[prevIndex]){
+                recursive(curIndex+1, prevIndex, increasing, length);
+                recursive(curIndex+1, curIndex, !increasing, length+1);
+            }
+        }
+        else{
+            if(nums[curIndex] < nums[prevIndex])
+                recursive(curIndex+1, curIndex, increasing, length+1);
+            else if(nums[curIndex] > nums[prevIndex]){
+                recursive(curIndex+1, prevIndex, increasing, length);
+                recursive(curIndex, prevIndex, !increasing, 0);
+            }
+        }
+        return;
+    }
+    recursive(1, 0, true, 0);
+    return maxLength;
+}
+
+// it can also be done in another way: 
+// find Longest increasing subsequence from both directions, for every index i, add both values and subtract 1
+// we will do that in bottom up DP
+
+
+// bottom up DP
+const findLBSLength = function (nums){
+	let dp1 = Array(nums.length).fill(1);
+	for(let i = 1; i < nums.length; i++){
+		for(let j = 0; j < i; j++){
+			if(nums[i] > nums[j])
+				dp1[i] = Math.max(dp1[i], 1 + dp1[j])
+		}
+	}
+	let maxLength = dp[nums.length-1];
+	let dp2 = Array(nums.length).fill(1);
+	for(let i = nums.length-2; i >= 0; i--){
+		for(let j = nums.length-1; j > i; j--){
+			if(nums[i] > nums[j])
+				dp2[i] = Math.max(dp2[i], 1 + dp2[j])
+		}
+		maxLength = Math.max(maxLength, dp1[i]+dp2[i]-1);
+	}
+	return maxLength;
+}
