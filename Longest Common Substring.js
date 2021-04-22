@@ -677,3 +677,72 @@ const findMinOperations = function(s1, s2) {
 	}
 	return dp[s1.length][s2.length];
 };
+
+
+
+// Strings Interleaving
+
+
+// fuck it I was wrong in interpreting the question.
+// These fuckers should do a better job at explaining what they want to ask in the goddamn question !
+//recursive brute force
+const findSI = function (m, n, p){
+	if(m.length + n.length !== p.length)
+		return false;
+	function recursive(l1 ,l2, index){
+		if(l1 === m.length && l2 === n.length && index === p.length)
+			return true;
+		if(index === p.length)
+			return false;
+		let value1 = false;
+		let value2 = false;
+		if(l1 < m.length && m[l1] === p[index])
+			value1 = recursive(l1+1, l2, index+1);
+		if(l2 < n.length && n[l2] === p[index])
+			value2 = recursive(l1, l2+1, index+1);
+		return (value1 || value2)
+	}
+	return recursive(0, 0, 0);
+}
+
+
+//red red red red red red red red red red red red red red
+// bottom up DP
+const findSI = function(m, n, p) {
+  // dp[mIndex][nIndex] will be storing the result of string leterleaving
+  // up to p[0..mIndex+nIndex-1]
+  const dp = Array(m.length + 1)
+    .fill(false)
+    .map(() => Array(n.length + 1).fill(false));
+
+  // make sure if lengths of the strings add up
+  if (m.length + n.length != p.length) return false;
+
+  for (let mIndex = 0; mIndex <= m.length; mIndex++) {
+    for (let nIndex = 0; nIndex <= n.length; nIndex++) {
+      // if 'm' and 'n' are empty, then 'p' must have been empty too.
+      if (mIndex === 0 && nIndex === 0) {
+        dp[mIndex][nIndex] = true;
+      }
+      // if 'm' is empty, we need to check the leterleaving with 'n' only
+      else if (mIndex === 0 && n[nIndex - 1] === p[mIndex + nIndex - 1]) {
+        dp[mIndex][nIndex] = dp[mIndex][nIndex - 1];
+      }
+      // if 'n' is empty, we need to check the leterleaving with 'm' only
+      else if (nIndex === 0 && m[mIndex - 1] === p[mIndex + nIndex - 1]) {
+        dp[mIndex][nIndex] = dp[mIndex - 1][nIndex];
+      } else {
+        // if the letter of 'm' and 'p' match, we take whatever is matched till mIndex-1
+        if (mIndex > 0 && m[mIndex - 1] === p[mIndex + nIndex - 1]) {
+          dp[mIndex][nIndex] = dp[mIndex - 1][nIndex];
+        }
+        // if the letter of 'n' and 'p' match, we take whatever is matched till nIndex-1 too
+        // note the '||', this is required when we have common letters
+        if (nIndex > 0 && n[nIndex - 1] === p[mIndex + nIndex - 1]) {
+          dp[mIndex][nIndex] = dp[mIndex][nIndex] || dp[mIndex][nIndex - 1];
+        }
+      }
+    }
+  }
+  return dp[m.length][n.length];
+};
